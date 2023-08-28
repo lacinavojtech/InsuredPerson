@@ -23,7 +23,7 @@ namespace InsuredPersonCollection
 
         public override string ToString()
         {
-            return string.Format($"{Name,-15}{Surname,-15}{Age,-10}{PhoneNumber,-15}");
+            return $"{Name,-15}{Surname,-15}{Age,-10}{PhoneNumber,-15}";
         }
     }
 }

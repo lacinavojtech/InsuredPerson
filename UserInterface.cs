@@ -21,11 +21,11 @@ namespace InsuredPersonCollection
         }
 
         // Clear console, draw logo representing this application, delay (time is editable) before continue
-        private static void Logo(int millisecond)
+        private void Logo(int milliseconds)
         {
             Console.Clear();
             Console.WriteLine("\r\n\t\t _______  _____   _____  _______\r\n\t\t |______ |_____] |     | |______\r\n\t\t |______ |       |_____| ______|\r\n\t\t");
-            Thread.Sleep(millisecond);
+            Thread.Sleep(milliseconds);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace InsuredPersonCollection
         }
 
         // Function for clear of row (number is editable) in console
-        private static void ClearConsoleLine(int numberOfRows)
+        private void ClearConsoleLine(int numberOfRows)
         {
             for (int i = 1; i <= numberOfRows; i++)
             {
@@ -82,7 +82,7 @@ namespace InsuredPersonCollection
         }
 
         // Read console, make it lower and trim
-        private static string ReadLine()
+        private string ReadLine()
         {
             return Console.ReadLine().ToLower().Trim();
         }
@@ -126,14 +126,13 @@ namespace InsuredPersonCollection
         }
 
         // Method which make uppercase first letter
-        private static string UppercaseFirstLetter(string input)
+        private string UppercaseFirstLetter(string input)
         {
             char firstChar = char.ToUpper(input[0]);
             string restOfString = input[1..];
 
             return firstChar + restOfString;
         }
-
 
         // Method to get name of insured person
         private string GetName()
@@ -188,13 +187,29 @@ namespace InsuredPersonCollection
         public void GetPersons()
         {
             Logo(250);
-            // Print title
-            Console.WriteLine("\nSeznam všech pojištěných osob.");
-            // Print header
-            Console.WriteLine("\nJméno          Příjmení       Věk       Telefonní číslo");
-            Console.WriteLine("--------------------------------------------------------");
-            // Print list
-            Console.WriteLine(database.GetPersons());
+
+            List<InsuredPerson> foundPersons = database.GetPersons();
+
+            if (foundPersons.Count > 0)
+            {
+                // Display result if something match
+                Console.WriteLine("\nSeznam všech pojištěných osob.");
+                Console.WriteLine("\nJméno          Příjmení       Věk       Telefonní číslo");
+                Console.WriteLine("--------------------------------------------------------\n");
+                
+                // Print list
+                foreach (InsuredPerson person in foundPersons)
+                {
+                    Console.WriteLine(person);
+                }
+            }
+            else
+            {
+                // Inform user about result
+                Console.WriteLine("\nNebyly nalezeny žádné záznamy.");
+                Thread.Sleep(1300);
+                ClearConsoleLine(3);
+            }
 
             Console.WriteLine("\n\nVrať se zpět do nabídky, stisknutím libovolné klávesy.");
             Console.ReadKey();
@@ -209,18 +224,21 @@ namespace InsuredPersonCollection
             do
             {
                 Logo(250);
-                // Search person
-                List<InsuredPerson> persons = database.FindPerson(GetName(), GetSurname());
 
-                if (persons.Count > 0)
+                // Search person in database
+                List<InsuredPerson> foundPersons = database.FindPerson(GetName(), GetSurname());
+
+                if (foundPersons.Count > 0)
                 {
                     Logo(250);
+
                     // Display result if something match
                     Console.WriteLine("\nVašemu hledání, vyhovují následující záznamy:");
                     Console.WriteLine("\nJméno          Příjmení       Věk       Telefonní číslo");
                     Console.WriteLine("--------------------------------------------------------\n");
 
-                    foreach (InsuredPerson person in persons)
+                    // Print list
+                    foreach (InsuredPerson person in foundPersons)
                     {
                         Console.WriteLine(person);
                     }
@@ -228,18 +246,18 @@ namespace InsuredPersonCollection
                 else
                 {
                     Logo(250);
+
                     // Inform user about result
                     Console.WriteLine("\nNebyly nalezeny žádné záznamy.");
                     Thread.Sleep(1300);
-                    ClearConsoleLine(2);
+                    ClearConsoleLine(3);
                 }
 
                 // Ask to find another person, or end of loop
-                Console.WriteLine("\nChcete vyhledat dalšího pojištěnce? (ano/ne)");
+                Console.WriteLine("\n\nChcete vyhledat dalšího pojištěnce? (ano/ne)");
 
             } while (VerifyAnswer(VerifyInput(ReadLine())));
         }
-
 
         /// <summary>
         /// Displays provided person data, asks to confirm and returns response
@@ -252,15 +270,19 @@ namespace InsuredPersonCollection
         public bool ConfirmPersonData(string name, string surname, int age, string phoneNumber)
         {
             Logo(250);
+
             // Print title
             Console.WriteLine("\nZkontrolujte zadané údaje:\n");
+
             // Display provided data
             Console.WriteLine($"Jméno: {name}");
             Console.WriteLine($"Příjmení: {surname}");
             Console.WriteLine($"Věk: {age}");
             Console.WriteLine($"Telefonní číslo: {phoneNumber}");
+
             // Ask to confirm the data
             Console.WriteLine("\nChcete potvrdit zápis těchto údajů? (ano/ne)");
+
             // Verify user input
             return VerifyAnswer(VerifyInput(ReadLine()));
         }
